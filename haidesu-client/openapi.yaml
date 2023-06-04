@@ -35,29 +35,6 @@ paths:
                   $ref: '#/components/schemas/User'
         default:
           $ref: '#/components/responses/Error'
-    post:
-      tags:
-        - user
-      summary: Add a new user
-      operationId: addNewUser
-      requestBody:
-        required: true
-        description: The user that has to be added
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateUser'
-      responses:
-        201:
-          description: user.ts added succesfully!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        400:
-          $ref: '#/components/responses/InvalidInput'
-        500:
-          $ref: '#/components/responses/Error'
   /users/{userId}:
     get:
       tags:
@@ -114,6 +91,54 @@ paths:
           $ref: '#/components/responses/NotFound'
         default:
           $ref: '#/components/responses/Error'
+  /users/authenticate:
+    post:
+      tags:
+        - user
+      summary: Authenticate a user on login
+      operationId: authenticateUserLogin
+      requestBody:
+        description: The user that wants to login
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        200:
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          description: Unauthorized
+        404:
+          $ref: '#/components/responses/NotFound'
+  /users/register:
+    post:
+      tags:
+        - user
+      summary: Register a new user
+      operationId: registerNewUser
+      requestBody:
+        required: true
+        description: The user that wants to join
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+      responses:
+        201:
+          description: User registered succesfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        409:
+          $ref: '#/components/responses/ConflictingData'
+        500:
+          $ref: '#/components/responses/Error'
 components:
   schemas:
     Error:
@@ -129,8 +154,6 @@ components:
           type: string
     User:
       required:
-        - id
-        - username
         - password
         - email
       allOf:
@@ -138,8 +161,6 @@ components:
         - $ref: '#/components/schemas/UserProperties'
         - $ref: '#/components/schemas/UserLastLogin'
     UserId:
-      required:
-        - id
       type: object
       properties:
         id:
@@ -147,20 +168,19 @@ components:
           format: int64
     UserProperties:
       required:
-        - username
         - password
         - email
       type: object
       properties:
         username:
           type: string
-          description: Name of the customer
+          description: Name
           example: John
         password:
           type: string
           format: password
-          description: Name of the customer
-          example: 1mP0rt3nt
+          description: Password
+          example: asdasd
         email:
           type: string
           description: Email
@@ -198,6 +218,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+    ConflictingData:
+      description: Invalid input
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     NotFound:
       description: Unable to find resource
       content:
@@ -208,7 +234,7 @@ components:
     userId:
       name: userId
       in: path
-      description: user.ts ID
+      description: User ID
       required: true
       schema:
         type: integer
