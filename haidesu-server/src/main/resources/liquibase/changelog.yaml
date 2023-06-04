@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - logicalFilePath: changelog.yaml
+  - includeAll:
+      path: changes
+      relativeToChangelogFile: true
